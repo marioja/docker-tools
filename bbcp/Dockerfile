@@ -13,6 +13,9 @@ RUN apk add --no-cache \
 # Download bbcp source code from official repository (ignore SSL certs)
 RUN git -c http.sslVerify=false clone https://www.slac.stanford.edu/~abh/bbcp/bbcp.git /bbcp
 
+# Copy our patched bbcp_FileSpec.C to fix the decode issue with missing filename fields
+COPY bbcp_FileSpec.C /bbcp/src/bbcp_FileSpec.C
+
 # Build bbcp from downloaded source - use default compilation which works with Alpine 3.14 GCC
 # Note: To add custom CFLAGS, you can override them like this:
 # make makeLinuxx86_64 OSVER=amd64_linux MD5HEADER=bbcp_MD5_openssl.h OBJMD5="../obj/amd64_linux/bbcp_MD5_openssl.o" \

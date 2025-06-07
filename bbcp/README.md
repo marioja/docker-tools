@@ -13,6 +13,8 @@ A Docker image for the Berkeley Balanced Copy Protocol (bbcp) - a high-performan
 - ✅ Multi-architecture support (amd64, arm64)
 - ✅ Minimal image size (~13.6MB)
 - ✅ All C++ runtime dependencies included
+- ✅ **Patched for Docker volume copy reliability** - Fixed file specification decode issues
+- ✅ GNU procps included for full `ps` command compatibility
 
 ## Quick Start
 
