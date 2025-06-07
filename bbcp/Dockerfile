@@ -27,7 +27,7 @@ FROM alpine:3.14
 
 # Install bash and runtime dependencies including C++ standard library
 # libstdc++ and libgcc are required for C++ executables compiled with g++
-RUN apk add --no-cache bash zlib openssl libnsl libstdc++ libgcc
+RUN apk add --no-cache bash zlib openssl libnsl libstdc++ libgcc procps
 
 # Copy the compiled bbcp executable from builder stage
 COPY --from=builder /usr/local/bin/bbcp /usr/local/bin/bbcp
