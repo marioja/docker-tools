@@ -1,6 +1,6 @@
 # BBCP Docker Image
 
-[![Build and Deploy](https://github.com/your-github-username/bbcp/actions/workflows/docker-build-deploy.yml/badge.svg)](https://github.com/your-github-username/bbcp/actions/workflows/docker-build-deploy.yml)
+[![Build and Deploy](https://github.com/marioja/bbcp/actions/workflows/docker-build-deploy.yml/badge.svg)](https://github.com/marioja/bbcp/actions/workflows/docker-build-deploy.yml)
 [![Docker Image Size](https://img.shields.io/docker/image-size/marioja/bbcp/latest)](https://hub.docker.com/r/marioja/bbcp)
 [![Docker Pulls](https://img.shields.io/docker/pulls/marioja/bbcp)](https://hub.docker.com/r/marioja/bbcp)
 
