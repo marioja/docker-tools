@@ -8,14 +8,40 @@ A Docker image for the Berkeley Balanced Copy Protocol (bbcp) - a high-performan
 
 ## Features
 
-- ✅ Built on Alpine 3.14 for optimal compatibility
+- ✅ Built on Ubuntu 20.04 for optimal compatibility
 - ✅ OpenSSL MD5 support properly configured
 - ✅ Multi-architecture support (amd64, arm64)
-- ✅ Minimal image size (~13.6MB)
 - ✅ All C++ runtime dependencies included
 - ✅ **Patched for Docker volume copy reliability** - Fixed file specification decode issues and hostname resolution
 - ✅ **Docker container networking support** - Handles unresolvable container hostnames gracefully
-- ✅ GNU procps included for full `ps` command compatibility
+- ✅ **Comprehensive version identification** - No more relying on image hashes for version determination
+- ✅ **OCI-compliant metadata labels** - Full version and build information embedded in image
+
+## Version Identification
+
+This Docker image implements best practices for version identification, eliminating the need to rely on image hashes:
+
+### Methods to Identify Version
+
+```bash
+# Method 1: Check image labels
+docker inspect marioja/bbcp:latest | jq '.[0].Config.Labels'
+
+# Method 2: Check bbcp binary version
+docker run --rm marioja/bbcp:latest bbcp -v
+
+# Method 3: Check environment variables
+docker run --rm marioja/bbcp:latest env | grep BBCP_
+```
+
+### Image Labels
+
+The image includes comprehensive OCI-compliant labels:
+- `org.opencontainers.image.version` - BBCP version (e.g., 17.12.00.00.1)
+- `org.opencontainers.image.created` - Build timestamp
+- `org.opencontainers.image.revision` - Git commit hash
+- `bbcp.version` - BBCP-specific version identifier
+- `bbcp.build.version` - Build tag/branch information
 
 ## Quick Start
 
@@ -50,6 +76,45 @@ docker run --rm -v $(pwd):/data marioja/bbcp:latest -P 5 /data/largefile.txt /da
 ### Network Copy (requires network setup)
 ```bash
 docker run --rm --network host marioja/bbcp:latest user@remote-host:/path/to/file /local/destination/
+```
+
+## Version Management Best Practices
+
+### Avoiding Hash-Based Identification
+
+Instead of relying on image hashes for version identification, this image implements several best practices:
+
+1. **Semantic Versioning Tags**: Images are tagged with semantic versions (e.g., `v17.12.00.00.1`)
+2. **OCI Labels**: Comprehensive metadata embedded in image labels
+3. **Environment Variables**: Version information available as environment variables
+
+### Example Version Queries
+
+```bash
+```bash
+# Quick version check
+docker run --rm marioja/bbcp:latest bbcp -v | head -1
+
+# Check build metadata
+docker inspect marioja/bbcp:latest | jq -r '.[0].Config.Labels."org.opencontainers.image.version"'
+
+# Check build date
+docker inspect marioja/bbcp:latest | jq -r '.[0].Config.Labels."org.opencontainers.image.created"'
+```
+
+### CI/CD Integration
+
+For automated deployments, use image labels instead of hashes:
+
+```bash
+# Good: Use semantic versioning
+docker pull marioja/bbcp:17.12.00.00.1
+
+# Good: Use specific tags with metadata
+docker pull marioja/bbcp:main-abc1234
+
+# Avoid: Hash-based identification
+# docker pull marioja/bbcp@sha256:abcd1234...
 ```
 
 ## Setup & Deployment

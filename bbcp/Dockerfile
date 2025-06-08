@@ -26,6 +26,12 @@ RUN mkdir -p ../obj/amd64_linux ../bin/amd64_linux && \
 # Runtime stage - use Ubuntu 20.04 for consistency
 FROM ubuntu:20.04
 
+# Build arguments for version information
+ARG BBCP_VERSION_EXTRACTED
+ARG BUILD_DATE  
+ARG VCS_REF
+ARG VERSION_TAG=latest
+
 # Set environment to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -39,6 +45,21 @@ RUN apt-get update && apt-get install -y \
 
 # Copy the compiled bbcp executable from builder stage
 COPY --from=builder /usr/local/bin/bbcp /usr/local/bin/bbcp
+
+# Add metadata labels for version identification
+LABEL org.opencontainers.image.title="BBCP - Berkeley Balanced Copy Protocol"
+LABEL org.opencontainers.image.description="High-performance copy utility for large files with Docker container fixes"
+LABEL org.opencontainers.image.version="${BBCP_VERSION_EXTRACTED}"
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.revision="${VCS_REF}"
+LABEL org.opencontainers.image.source="https://github.com/marioja/bbcp"
+LABEL org.opencontainers.image.url="https://hub.docker.com/r/marioja/bbcp"
+LABEL org.opencontainers.image.documentation="https://github.com/marioja/bbcp/blob/main/README.md"
+LABEL org.opencontainers.image.vendor="marioja"
+LABEL org.opencontainers.image.licenses="LGPL-3.0"
+LABEL maintainer="marioja"
+LABEL bbcp.version="${BBCP_VERSION_EXTRACTED}"
+LABEL bbcp.build.version="${VERSION_TAG}"
 
 # Set entrypoint
 ENTRYPOINT ["bbcp"]

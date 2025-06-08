@@ -39,7 +39,6 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -52,6 +51,24 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
           type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value={{branch}}-{{sha}},enable={{is_default_branch}}    - name: Get BBCP version from source
+      id: bbcp-version
+      run: |
+        # Clone the bbcp repository to extract version
+        git clone https://github.com/marioja/bbcp.git temp-bbcp
+        
+        # Extract version from bbcp_Version.C
+        if [ -f "temp-bbcp/src/bbcp_Version.C" ]; then
+          VERSION=$(grep 'Version.*=' temp-bbcp/src/bbcp_Version.C | sed 's/.*Version: \([^"]*\)".*/\1/' | head -1)
+          echo "Extracted BBCP version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+        else
+          echo "Could not find bbcp_Version.C, using default"
+          echo "version=17.12.00.00.1" >> $GITHUB_OUTPUT
+        fi
+        
+        # Clean up
+        rm -rf temp-bbcp
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
@@ -63,7 +80,11 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         platforms: linux/amd64,linux/arm64
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=max        build-args: |
+          BBCP_VERSION_EXTRACTED=${{ steps.bbcp-version.outputs.version }}
+          BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          VCS_REF=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+          VERSION_TAG=${{ github.ref_name }}
 
     - name: Update Docker Hub description
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
