@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Download bbcp source code from official repository (ignore SSL certs)
-RUN git -c http.sslVerify=false clone https://www.slac.stanford.edu/~abh/bbcp/bbcp.git /bbcp
+# Clone bbcp source code from marioja/bbcp repository (with Docker container fixes)
+RUN git clone https://github.com/marioja/bbcp.git /bbcp
 
-# Build bbcp from downloaded source - use x86_64 Linux target
+# Build bbcp from cloned source - use x86_64 Linux target
 WORKDIR /bbcp/src
 RUN mkdir -p ../obj/amd64_linux ../bin/amd64_linux && \
     make makeLinuxx86_64 OSVER=amd64_linux MD5HEADER=bbcp_MD5_openssl.h OBJMD5="../obj/amd64_linux/bbcp_MD5_openssl.o" && \
