@@ -13,7 +13,8 @@ A Docker image for the Berkeley Balanced Copy Protocol (bbcp) - a high-performan
 - ✅ Multi-architecture support (amd64, arm64)
 - ✅ Minimal image size (~13.6MB)
 - ✅ All C++ runtime dependencies included
-- ✅ **Patched for Docker volume copy reliability** - Fixed file specification decode issues
+- ✅ **Patched for Docker volume copy reliability** - Fixed file specification decode issues and hostname resolution
+- ✅ **Docker container networking support** - Handles unresolvable container hostnames gracefully
 - ✅ GNU procps included for full `ps` command compatibility
 
 ## Quick Start
@@ -200,6 +201,21 @@ bbcp (C) 2002-2020 by the Board of Trustees of the Leland Stanford, Jr., Univers
       All Rights Reserved. See 'bbcp -?' for complete license terms.
       Version: 17.12.00.00.0
 ```
+
+## Docker Container Patches
+
+This image includes critical patches for Docker container reliability:
+
+### 1. File Specification Decode Fix
+**Problem**: Original bbcp fails with "Unable to decode item 9 in file specification" when handling files with missing filename fields.
+**Solution**: Patched `bbcp_FileSpec.C` to gracefully handle specifications with only 8 fields instead of requiring all 9.
+
+### 2. Hostname Resolution Fix  
+**Problem**: In Docker containers, `gethostname()` returns unresolvable container IDs, causing "Unable to determine the callback host!" errors.
+**Solution**: Patched `bbcp_NetAddr.C` constructor to fall back to localhost when hostname resolution fails, ensuring the network address object remains in a valid state.
+
+### Impact
+These patches eliminate intermittent failures when copying Docker volumes and allow bbcp to work reliably in containerized environments.
 
 ## Build Information
 
